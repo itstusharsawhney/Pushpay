@@ -1,0 +1,301 @@
+---
+title: "Pushpay Data Analysis Test"
+author: "Tushar Sawhney"
+date: "29 May 2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+
+# Loading libraries
+library(tidyverse)
+library(DataExplorer)
+library(ggpubr)
+library(reshape2)
+library(lubridate)
+options(scipen=999)
+```
+
+```{r, include=FALSE}
+# Reading data
+data_raw<-read_csv("schedule_a-2021-05-29T11_10_13.csv")
+```
+
+
+
+
+For the given task, and with the provided data, we have been asked specifically to check for the following criteria, 
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+* Occupation
+* Employer
+* State
+* Rate Over Time
+
+<br>
+<br>
+<br>
+
+We can notice that from the derived data below, only 0.17% of Occupation and 0.31% of Employer data is missing. This gives us confidence to analyze further, as most of the data is NOT NULL.
+
+```{r, include=FALSE}
+# Selecting the desired columns
+
+data<-data_raw %>% 
+  select("contributor_occupation","contributor_employer","contributor_state", "contribution_receipt_date","contribution_receipt_amount")
+
+
+
+x<-plot_missing(data)
+
+```
+
+<br>
+<br>
+<br>
+
+<br>
+<br>
+<br>
+
+
+```{r show_figure_8, fig.width = 8, fig.height = 4, echo=FALSE}
+x
+```
+
+<br>
+<br>
+<br>
+
+
+<br>
+<br>
+<br>
+
+From the following plot we can conclude that most of the contribution has been from the donors who were not employed then. They can either be unemployed, or retired people as well. It was followed by Software Engineers and Engineers. NONE here indicates that the donor didn't mention their employment. This maybe because they recognize the impact that policies such as Medicare for All and student loan debt relief could have on their well-being.
+
+<br>
+<br>
+<br>
+
+```{r, include=FALSE}
+# Let us see which occupation has provided with greater occupations than the others
+ max_occupation<-data %>% 
+  group_by(contributor_occupation) %>% 
+  summarise(amount=sum(contribution_receipt_amount)) %>% 
+  arrange(desc(amount)) %>% 
+  top_n(20)
+
+x<- ggdotchart(max_occupation, x = "contributor_occupation", y = "amount",
+           color = "contributor_occupation",
+           add = "segments", 
+          label = NULL,
+          ylab = FALSE,
+          rotate = TRUE,
+          xlab = "Amount (USD)",
+          legend="none",
+          sorting = "descending",                        # Sort value in descending order
+          ggtheme = theme_pubr()                        # ggplot2 theme
+           )
+
+x
+```
+
+```{r show_figure_, fig.width = 8, fig.height = 4, echo=FALSE}
+x
+```
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+
+
+In terms of donors with employement, the ones who are Self Employed have donated the most, followed by those employed by Google, Amazon and Microsoft. NA here represents missing employer, and NONE represents donator didn't wish to disclose their employer.
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+
+```{r, include=FALSE}
+max_employer<-data %>% 
+  group_by(contributor_employer) %>% 
+  summarise(amount=sum(contribution_receipt_amount)) %>% 
+  arrange(desc(amount)) %>% 
+  filter(contributor_employer!="SELF-EMPLOYED") %>% 
+  top_n(20)
+
+x<-ggdotchart(max_employer, x = "contributor_employer", y = "amount",
+           color = "contributor_employer",
+           legend="none",
+           ylab = FALSE,
+           rotate = TRUE,
+           xlab="Amount (USD)",
+           add = "segments",  
+           sorting = "descending",                        # Sort value in descending order
+           ggtheme = theme_pubr()                        # ggplot2 theme
+           )
+
+
+
+```
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+```{r show_figure_1, fig.width = 8, fig.height = 4,echo=FALSE}
+x
+```
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+However, the number of contributions by donors by profession can be different from the sum of donations.
+
+We can notice that even though the Software Engineers contributed to the greatest amount of donations, it was the number of Teachers made highest contributions in terms of the count. This means Donation/Profession was greatest for Software Engineers, even though more number Teachers donated.
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+```{r, include=FALSE}
+# Let us see which occupation has provided with greater occupations than the others
+max_occupation<-data %>% 
+  group_by(contributor_occupation) %>% 
+  summarise(amount=n()) %>% 
+  arrange(desc(amount)) %>% 
+  top_n(20)
+
+x<-ggdotchart(max_occupation, x = "contributor_occupation", y = "amount",
+           color = "contributor_occupation",
+           legend="none",
+           xlab = FALSE,
+           ylab="Amount (USD)",
+           add = "segments",  
+           rotate = TRUE,
+           sorting = "descending",                        # Sort value in descending order
+           ggtheme = theme_pubr()                        # ggplot2 theme
+           )
+```
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+```{r show_figure_2, fig.width = 8, fig.height = 4, echo=FALSE}
+x
+```
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+In terms of States, California witnessed the greatest contribution, followed by New York and Washington. This makes sense as presidential candidates generally raise the vast majority of their campaign dollars from donors in states with the largest concentrations of population and wealth.
+
+```{r, include=FALSE}
+max_state<-data %>% 
+  group_by(contributor_state) %>% 
+  summarise(amount=sum(contribution_receipt_amount)) %>% 
+  arrange(desc(amount)) %>% 
+  top_n(20)
+
+x<-ggdotchart(max_state, x = "contributor_state", y = "amount",
+           legend="none",
+           color = "contributor_state",
+           add = "segments",
+           xlab = FALSE,
+           ylab="Amount (USD)",
+           sorting = "descending",                        # Sort value in descending order
+           ggtheme = theme_pubr()                        # ggplot2 theme
+           )
+
+```
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+```{r show_figure_4, fig.width = 8, fig.height = 4,echo=FALSE}
+x
+```
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+The data available to us was from 2020-03-01 to 2020-03-31. From the plot above, we can notice that the maximum donation was made in the first week of March, followed by second. 
+
+There exists some negative contribution value as well, which I think is some error in the recorded data.
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+```{r, include=FALSE}
+# Converting date
+date_data<-mutate(data, date = ymd(contribution_receipt_date), day = day(date), 
+  month = month(date), year = year(date), week(date))
+
+x<-ggplot(date_data, aes(x = day, y = contribution_receipt_amount)) + 
+  geom_line() +
+  scale_color_manual(values = c("#00AFBB", "#E7B800")) +
+  xlab("Day")+
+  ylab("Amount (USD)")
+  theme_minimal()
+  
+```
+
+<br>
+<br>
+<br>
+
+```{r show_figure_5, fig.width = 8, fig.height = 4, echo=FALSE}
+x
+```
+
+
+
