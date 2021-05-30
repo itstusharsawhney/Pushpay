@@ -43,7 +43,7 @@ For the given task, and with the provided data, we have been asked specifically 
 <br>
 <br>
 
-We can notice that from the derived data below, only 0.17% of Occupation and 0.31% of Employer data is missing. This gives us confidence to analyze further, as most of the data is NOT NULL.
+We can notice that from the derived data below, only 0.17% of Occupation (~750 values) and 0.31% of Employer data (1500 values) is missing. This gives us confidence to analyze further, as most of the data is NOT NULL. This can be analyzed with the help of following chart - 
 
 ```{r, include=FALSE}
 # Selecting the desired columns
@@ -79,7 +79,17 @@ x
 <br>
 <br>
 
-From the following plot we can conclude that most of the contribution has been from the donors who were not employed then. They can either be unemployed, or retired people as well. It was followed by Software Engineers and Engineers. NONE here indicates that the donor didn't mention their employment. This maybe because they recognize the impact that policies such as Medicare for All and student loan debt relief could have on their well-being.
+
+<br>
+<br>
+<br>
+
+
+<br>
+<br>
+<br>
+
+From the following plot we can conclude that most of the contribution has been from the donators who were not employed then. They can either be unemployed, or retired people as well. It was followed by Software Engineers and Engineers. NONE here indicates that the donor didn't mention their employment. The preference of this voter group towards Bernie Sanders maybe because they recognize the impact that policies such as Medicare for All and student loan debt relief could have on their well-being.
 
 <br>
 <br>
@@ -99,7 +109,7 @@ x<- ggdotchart(max_occupation, x = "contributor_occupation", y = "amount",
           label = NULL,
           ylab = FALSE,
           rotate = TRUE,
-          xlab = "Amount (USD)",
+          xlab = "Amount",
           legend="none",
           sorting = "descending",                        # Sort value in descending order
           ggtheme = theme_pubr()                        # ggplot2 theme
@@ -119,10 +129,16 @@ x
 <br>
 <br>
 
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
 
 
-In terms of donors with employement, the ones who are Self Employed have donated the most, followed by those employed by Google, Amazon and Microsoft. NA here represents missing employer, and NONE represents donator didn't wish to disclose their employer.
+In terms of donors with employement, the ones who are Self Employed have donated the most, followed by those employed by Google, Amazon and Microsoft. NA here represents missing employer, and NONE represents donator didn't wish to disclose their employer. All the tech giants employ mostly Software Engineers, so it shows a healthy correlation from our previous insights. The following graph shows the same - 
 
 
 <br>
@@ -198,8 +214,8 @@ max_occupation<-data %>%
 x<-ggdotchart(max_occupation, x = "contributor_occupation", y = "amount",
            color = "contributor_occupation",
            legend="none",
-           xlab = FALSE,
-           ylab="Amount (USD)",
+           xlab = "Amount (USD)",
+           ylab=FALSE,
            add = "segments",  
            rotate = TRUE,
            sorting = "descending",                        # Sort value in descending order
